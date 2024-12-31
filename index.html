@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub User Info</title>
+    <style>
+      body {
+        font-family: 'Poppins', sans-serif;
+        background: url('https://images.unsplash.com/photo-1517336714731-489689fd1ca8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwzNjUyOXwwfDF8c2VhcmNofDJ8fHBsdXNoJTIwdG95fGVufDB8fHx8MTY5ODUwNjgyNw&ixlib=rb-1.2.1&q=80&w=1080') no-repeat center center fixed;
+        background-size: cover;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 100%;
+        max-width: 1200px;
+        gap: 20px; /* Adds gap between the two sections */
+      }
+
+      .search-section {
+        flex: 1;
+        max-width: 40%;
+        text-align: left;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        margin-right: 10px; /* Optional: Additional spacing */
+      }
+
+      h1 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      input {
+        padding: 10px;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        width: 100%;
+        max-width: 300px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 1rem;
+        color: #fff;
+        background: #00c6ff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        font-weight: bold;
+        margin-left: 10px;
+      }
+
+      button:hover {
+        transform: scale(1.1);
+        background: #0095ff;
+      }
+
+      .details-section {
+        flex: 2;
+        max-width: 60%;
+        padding: 20px;
+        text-align: left;
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        display: none;
+      }
+
+      #avatar {
+        display: block;
+        margin: 0 auto 20px auto;
+        border-radius: 50%;
+        width: 150px;
+        height: 150px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      }
+
+      .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 1rem;
+      }
+
+      .info-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .label {
+        font-weight: bold;
+        color: #00c6ff;
+      }
+
+      /* Responsive Styles */
+      @media (max-width: 768px) {
+        .container {
+          flex-direction: column;
+          align-items: center;
+          gap: 10px; /* Smaller gap on mobile */
+        }
+
+        .search-section,
+        .details-section {
+          max-width: 100%;
+          text-align: center;
+          margin-right: 0; /* Remove additional spacing */
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Search Section -->
+      <div class="search-section">
+        <h1>GitHub Information</h1>
+        <input type="text" id="username" placeholder="Enter GitHub username" />
+        <button>Get Details</button>
+      </div>
+
+      <!-- Details Section -->
+      <div class="details-section" id="detailsSection">
+        <img id="avatar" alt="GitHub User Avatar" />
+        <div class="info-item">
+          <span class="label">Name:</span>
+          <span id="userName">-</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Username:</span>
+          <span id="userLogin">-</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Public Repos:</span>
+          <span id="userRepos">-</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Followers:</span>
+          <span id="userFollowers">-</span>
+        </div>
+        <div class="info-item">
+          <span class="label">Bio:</span>
+          <span id="userBio">-</span>
+        </div>
+      </div>
+    </div>
+    <script>
+      let inp = document.querySelector("#username");
+      let btn = document.querySelector("button");
+      let avatar = document.querySelector("#avatar");
+      let detailsSection = document.querySelector("#detailsSection");
+
+      // Info fields
+      let userName = document.querySelector("#userName");
+      let userLogin = document.querySelector("#userLogin");
+      let userRepos = document.querySelector("#userRepos");
+      let userFollowers = document.querySelector("#userFollowers");
+      let userBio = document.querySelector("#userBio");
+
+      const apiUrl = "https://api.github.com/users/";
+
+      async function getUser() {
+        const username = inp.value.trim();
+
+        if (!username) {
+          alert("Please enter a username!");
+          return;
+        }
+
+        try {
+          const res = await axios.get(apiUrl + username);
+          const user = res.data;
+
+          // Update UI
+          avatar.setAttribute("src", user.avatar_url);
+          userName.textContent = user.name || "No name available";
+          userLogin.textContent = user.login;
+          userRepos.textContent = user.public_repos;
+          userFollowers.textContent = user.followers;
+          userBio.textContent = user.bio || "No bio available";
+
+          detailsSection.style.display = "block";
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+          alert("User not found or API limit exceeded.");
+          avatar.setAttribute("src", "");
+          detailsSection.style.display = "none";
+        }
+      }
+
+      btn.addEventListener("click", getUser);
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
+  </body>
+</html>
